@@ -1,0 +1,1 @@
+![Tests](https://github.com/xaqnu/peluqueriaexcheduler/actions/workflows/test.yml/badge.svg)
