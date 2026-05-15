@@ -1,9 +1,13 @@
 package com.unax.peluqueriascheduler.domain.Usuarios;
 
-public final class Cliente extends Usuario {
+public non-sealed class Cliente extends Usuario {
 
-    protected Cliente(int id, String nombre, String email, String telefono) {
+    public Cliente(int id, String nombre, String email, String telefono) {
         super(id, nombre, email, telefono);
+        
+    }
+    public Cliente(int id, String nombre, String email) {
+        super(id, nombre, email, null);
         
     }
 
