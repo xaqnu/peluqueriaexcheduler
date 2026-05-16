@@ -31,4 +31,10 @@ jobs:
 
       - name: Run tests
         run: ./mvnw test
+        env:
+          SPRING_PROFILES_ACTIVE: test
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/peluqueriaschedulertest
+          SPRING_DATASOURCE_USERNAME: admin
+          SPRING_DATASOURCE_PASSWORD: secret
+
 
