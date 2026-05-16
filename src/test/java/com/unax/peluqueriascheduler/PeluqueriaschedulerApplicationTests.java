@@ -1,29 +1,40 @@
 package com.unax.peluqueriascheduler;
 
 import java.time.LocalDateTime;
-
+import java.time.LocalTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
+import com.unax.peluqueriascheduler.dbfilters.CitasFilter;
 import com.unax.peluqueriascheduler.domain.Citas.Cita;
 import com.unax.peluqueriascheduler.domain.Citas.CitaRequest;
 import com.unax.peluqueriascheduler.domain.Citas.EstadoCita;
 import com.unax.peluqueriascheduler.domain.Usuarios.Cliente;
+import com.unax.peluqueriascheduler.domain.Usuarios.Peluquero;
+import com.unax.peluqueriascheduler.repositories.CitasRepository;
+import com.unax.peluqueriascheduler.utils.TimeInterval;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ActiveProfiles("test")
 class PeluqueriaschedulerApplicationTests {
 
+	@Autowired
+    private CitasRepository repository;
 	@Test
 	void contextLoads() {
 	}
 	@Test
-	void citas_can_be_created() {
+	void citasCanBeCreated() {
 		Cita cita = new Cita(
 			1,
 			1,
@@ -39,7 +50,7 @@ class PeluqueriaschedulerApplicationTests {
 		// Aquí puedes agregar pruebas para verificar que las citas se crean correctamente
 	}
 	@Test
-	void cita_cannot_have_nonpositive_id() {
+	void citaCannotHaveNonpositiveId() {
 		assertThrows(IllegalArgumentException.class, () -> {
 			new Cita(
 				-1,
@@ -54,7 +65,7 @@ class PeluqueriaschedulerApplicationTests {
 	}
 
 	@Test
-	void cita_cannot_have_null_timestamp_Inicio() {
+	void citaCannotHaveNullTimestampInicio() {
 		assertThrows(IllegalArgumentException.class, () -> {
 			new Cita(
 				1,
@@ -68,7 +79,7 @@ class PeluqueriaschedulerApplicationTests {
 		});	
 	} 
 	@Test
-	void cita_cannot_have_null_timestamp_Fin() {
+	void citaCannotHaveNullTimestampFin() {
 		assertThrows(IllegalArgumentException.class, () -> {
 			new Cita(
 				1,
@@ -82,7 +93,7 @@ class PeluqueriaschedulerApplicationTests {
 		});	
 	}
 	@Test
-	void cita_cannot_have_timestampFin_before_timestampInicio() {
+	void citaCannotHaveTimestampFinBeforeTimestampInicio() {
 		assertThrows(IllegalArgumentException.class, () -> {
 			new Cita(
 				1,
@@ -97,7 +108,7 @@ class PeluqueriaschedulerApplicationTests {
 	}
 
 	@Test
-	void cita_cannot_have_null_estado() {
+	void citaCannotHaveNullEstado() {
 		assertThrows(IllegalArgumentException.class, () -> {
 			new Cita(
 				1,
@@ -112,7 +123,7 @@ class PeluqueriaschedulerApplicationTests {
 	}
 
 	@Test
-	void cita_cannot_have_non_positive_clientId() {
+	void citaCannotHaveNonPositiveClientId() {
 		assertThrows(IllegalArgumentException.class, () -> {
 			new Cita(
 				1,
@@ -126,7 +137,7 @@ class PeluqueriaschedulerApplicationTests {
 		});	
 	}
 	@Test
-	void cita_cannot_have_non_positive_peluqueroId() {
+	void citaCannotHaveNonPositivePeluqueroId() {
 		assertThrows(IllegalArgumentException.class, () -> {
 			new Cita(
 				1,
@@ -140,7 +151,7 @@ class PeluqueriaschedulerApplicationTests {
 		});	
 	}
 	@Test
-	void cita_cannot_have_non_positive_tipoServicioId() {
+	void citaCannotHaveNonPositiveTipoServicioId() {
 		assertThrows(IllegalArgumentException.class, () -> {
 			new Cita(	
 				1,
@@ -155,17 +166,17 @@ class PeluqueriaschedulerApplicationTests {
 	}
 
 	@Test
-	void citaRequest_can_be_created() {
+	void citaRequestCanBeCreated() {
 		CitaRequest citaRequest = new CitaRequest(
 			"Corte de pelo",
-		    LocalDateTime.of(2026,2, 3, 0, 0, 0, 0)
+		    LocalDateTime.of(2026,7, 3, 0, 0, 0, 0)
 		);
 		assertThat(citaRequest.tipoServicio()).isEqualTo("Corte de pelo");
-		assertThat(citaRequest.timestampInicio()).isEqualTo(LocalDateTime.of(2026, 2, 3, 0, 0, 0, 0));
+		assertThat(citaRequest.timestampInicio()).isEqualTo(LocalDateTime.of(2026, 7, 3, 0, 0, 0, 0));
 	}
 
 	@Test
-	void cliente_can_be_created() {
+	void clienteCanBeCreated() {
 		Cliente cliente1 = new Cliente(
 			1,
 			"Unax",
@@ -185,6 +196,82 @@ class PeluqueriaschedulerApplicationTests {
 		assertThat(cliente2.id()).isEqualTo(2);
 		assertThat(cliente2.telefono()).isEqualTo("123456789");
 	}
-	
-}
+	@Test
+	void peluqueroCanBeCreated() {
+		Peluquero peluquero = new Peluquero(
+			1,
+			"Pepe",
+			"pepe@example.com",
+			"987654321"
+		);
+		Peluquero peluquero2 = new Peluquero(
+			2,
+			"Juan",
+			"juan@example.com"
+		);
+		assertThat(peluquero.id()).isEqualTo(1);
+		assertThat(peluquero.nombre()).isEqualTo("Pepe");
+		assertThat(peluquero.email()).isEqualTo("pepe@example.com");
+		assertThat(peluquero.telefono()).isEqualTo("987654321");
 
+		assertThat(peluquero2.id()).isEqualTo(2);
+		assertThat(peluquero2.nombre()).isEqualTo("Juan");
+		assertThat(peluquero2.email()).isEqualTo("juan@example.com");
+		assertThat(peluquero2.telefono()).isNull();
+	}
+	@Test
+	void citasCanbeCreatedInDatabase() {
+		Cliente cliente = new Cliente(1, "Unax", "unax@example.com");
+		Peluquero peluquero = new Peluquero(1, "Pepe", "pepe@example.com", "987654321");
+		CitaRequest citaRequest = new CitaRequest("Corte", LocalDateTime.now().plusDays(1));
+		Cita cita = repository.createCita(citaRequest, cliente, peluquero);
+		assertThat(cita).isNotNull();
+		assertThat(cita.clientId()).isEqualTo(cliente.id());
+		assertThat(cita.peluqueroId()).isEqualTo(peluquero.id());
+		assertThat(cita.tipoServicioId()).isGreaterThan(0);
+		assertThat(cita.timestampInicio()).isEqualTo(citaRequest.timestampInicio());
+		assertThat(cita.estado()).isEqualTo(EstadoCita.PENDIENTE);	
+	}
+
+	@Test
+	void citasCanbeRetrievedFromDatabase() {
+		Cita cita = repository.getCitaById(1);
+		assertThat(cita).isNotNull();
+		assertThat(cita.id()).isEqualTo(1);
+	}
+    @Test
+	void citasCanBeRetrievedByCliente() {
+	    Cliente cliente = new Cliente(1, "Juan Pérez", "juan@test.com");
+		List<Cita> citas = repository.getCitasByCliente(cliente);
+		assertThat(citas).isNotNull();
+		boolean clienteCorrecto = citas.stream().allMatch((x) -> x.clientId()==cliente.id());
+		assertTrue(clienteCorrecto);
+
+	}
+	@Test
+	void citasCanBeRetrievedByPeluquero(){
+		Peluquero peluquero = new Peluquero(1, "María García", "maria@test.com");
+		List<Cita> citas =repository.getCitasByPeluquero(peluquero);
+		assertThat(citas).isNotNull();
+		boolean peluqueroCorrecto = citas.stream().allMatch((x) -> x.peluqueroId()==peluquero.id());
+		assertTrue(peluqueroCorrecto);
+		
+	}
+	@Test
+	void citasFilterCanBeCreated(){
+		Map<Integer,List<TimeInterval>>rangosHorarios = new HashMap<>();
+		rangosHorarios.put(1, List.of(new TimeInterval(LocalTime.of(8, 0),LocalTime.of(15, 0))));
+		rangosHorarios.put(2, List.of(new TimeInterval(LocalTime.of(8, 0),LocalTime.of(15, 0))));
+		rangosHorarios.put(4, List.of(new TimeInterval(LocalTime.of(8, 0),LocalTime.of(15, 0))));
+		CitasFilter citasFilter =  CitasFilter.builder()
+											  .semana(1)
+											  .anio(2026)
+											  .rangosHorarios(rangosHorarios)
+											  .build();
+		assertThat(citasFilter.semana()).isEqualTo(1);
+		assertThat(citasFilter.anio()).isEqualTo(2026);
+		assertThat(citasFilter.rangosHorarios().get(1).getFirst()).isEqualTo(new TimeInterval(LocalTime.of(8, 0),LocalTime.of(15, 0)));
+
+	}
+
+}

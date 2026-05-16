@@ -12,15 +12,16 @@ import com.unax.peluqueriascheduler.domain.Usuarios.Cliente;
 import com.unax.peluqueriascheduler.domain.Usuarios.Peluquero;
 import com.unax.peluqueriascheduler.generated.tables.records.CitasRecord;
 
+
 import static com.unax.peluqueriascheduler.generated.Tables.CITAS;
 import static com.unax.peluqueriascheduler.generated.Tables.TIPOS_SERVICIO;
 import java.util.List;
 
 @Repository
-class citasRepository {
+public class CitasRepository {
     private final DSLContext dsl;
 
-    public citasRepository(DSLContext dsl) {
+    public CitasRepository(DSLContext dsl) {
         this.dsl = dsl;
     }
     @Transactional(readOnly=true)

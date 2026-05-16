@@ -13,6 +13,7 @@ public record Cita (
      EstadoCita estado
 ){
     public Cita {
+
         if (id <= 0) throw new IllegalArgumentException("id debe ser positivo");
         if (clientId <= 0) throw new IllegalArgumentException("clienteId debe ser positivo");
         if (peluqueroId <= 0) throw new IllegalArgumentException("peluqueroId debe ser positivo");
@@ -21,6 +22,8 @@ public record Cita (
         if (timestampFin == null) throw new IllegalArgumentException("timestampFin no puede ser null");
         if (timestampFin.isBefore(timestampInicio)) throw new IllegalArgumentException("timestampFin debe ser después de timestampInicio");
         if (estado == null) throw new IllegalArgumentException("estado no puede ser null");
+                timestampInicio=timestampInicio.truncatedTo(java.time.temporal.ChronoUnit.MINUTES);
+        timestampFin=timestampFin.truncatedTo(java.time.temporal.ChronoUnit.MINUTES);
     }
     
 };
