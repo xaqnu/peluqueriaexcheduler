@@ -1,6 +1,5 @@
 package com.unax.peluqueriascheduler;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.WeekFields;
@@ -342,10 +341,10 @@ class PeluqueriaschedulerApplicationTests {
 				"diaSemana=2 solo devuelve citas de martes"
 			),
 			Arguments.of(
-				CitasFilter.builder().desde(LocalDate.of(2026, 5, 12)).hasta(LocalDate.of(2026, 5, 14)).build(),
+				CitasFilter.builder().desde(LocalDateTime.of(2026,5,1,0,0,0)).hasta(LocalDateTime.of(2026, 5, 14,0,0,0)).build(),
 				(Predicate<List<Cita>>) citas -> citas.stream().allMatch(c ->
-					!c.timestampInicio().toLocalDate().isBefore(LocalDate.of(2026, 5, 12)) &&
-					!c.timestampInicio().toLocalDate().isAfter(LocalDate.of(2026, 5, 14))),
+					!c.timestampInicio().isBefore(LocalDateTime.of(2026, 5, 1,0,0,0)) &&
+					!c.timestampInicio().isAfter(LocalDateTime.of(2026, 5, 14,0,0,0))),
 				"desde-hasta solo devuelve citas en ese rango de fechas"
 			),
 			Arguments.of(

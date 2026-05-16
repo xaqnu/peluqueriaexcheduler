@@ -3,7 +3,8 @@ package com.unax.peluqueriascheduler.dbfilters;
 import static com.unax.peluqueriascheduler.generated.Tables.CITAS;
 import static org.jooq.impl.DSL.extract;
 
-import java.time.LocalDate;
+
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +33,8 @@ public record CitasFilter(
     Integer anio,
     Integer diaSemana,
     Map<Integer,List<TimeInterval>> rangosHorarios,
-    LocalDate desde,
-    LocalDate hasta
+    LocalDateTime desde,
+    LocalDateTime hasta
 )implements Filter {
     @Override
     public Condition toCondition(DSLContext dsl) {
@@ -42,10 +43,10 @@ public record CitasFilter(
             builder.add(CITAS.ESTADO.notEqual(noestado.name()));
         }
         if (desde!= null) {
-            builder.add(CITAS.TIMESTAMP_INICIO.cast(java.time.LocalDate.class).greaterOrEqual(desde));
+            builder.add(CITAS.TIMESTAMP_INICIO.greaterOrEqual(desde));
         }
         if (hasta != null) {
-            builder.add(CITAS.TIMESTAMP_FIN.cast(java.time.LocalDate.class).lessOrEqual(hasta));
+            builder.add(CITAS.TIMESTAMP_FIN.lessOrEqual(hasta));
         }
         if (clienteId != null) {
             builder.add(CITAS.CLIENTE_ID.eq(clienteId));
