@@ -8,7 +8,6 @@ CREATE TABLE usuarios (
     nombre VARCHAR(100) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     telefono VARCHAR(20),
-    password_hash VARCHAR(255) NOT NULL,
     rol_id INT NOT NULL REFERENCES roles(id)
 );
 
@@ -38,6 +37,12 @@ CREATE TABLE horarios_laborales (
 CREATE TABLE peluquero_configuracion (
     peluquero_id INT PRIMARY KEY REFERENCES usuarios(id),
     semanas_agenda_abierta INT NOT NULL DEFAULT 4 check (semanas_agenda_abierta > 0 AND semanas_agenda_abierta <= 10)
+);
+
+CREATE TABLE autenticacion(
+    user_id INT PRIMARY KEY REFERENCES usuarios(id),
+    pass_hash VARCHAR(256),
+    salting VARCHAR(256)
 );
 
 CREATE INDEX idx_usuarios_email ON usuarios(email);  -- login

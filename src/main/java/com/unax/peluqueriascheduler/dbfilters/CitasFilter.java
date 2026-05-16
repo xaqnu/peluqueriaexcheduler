@@ -1,7 +1,6 @@
 package com.unax.peluqueriascheduler.dbfilters;
 
 import static com.unax.peluqueriascheduler.generated.Tables.CITAS;
-import static com.unax.peluqueriascheduler.generated.Tables.VISTA_HUECOS;
 import static org.jooq.impl.DSL.extract;
 
 import java.time.LocalDate;
@@ -26,6 +25,7 @@ public record CitasFilter(
     Integer peluqueroId,
     Integer tipoServicioId,
     EstadoCita estado,
+    EstadoCita noestado,
     Integer dia,
     Integer semana,
     Integer mes,
@@ -38,11 +38,14 @@ public record CitasFilter(
     @Override
     public Condition toCondition(DSLContext dsl) {
         List<Condition> builder = new ArrayList<>();
+        if  (noestado()!=null){
+            builder.add(CITAS.ESTADO.notEqual(noestado.name()));
+        }
         if (desde!= null) {
-            builder.add(VISTA_HUECOS.DESDE.cast(java.time.LocalDate.class).greaterOrEqual(desde));
+            builder.add(CITAS.TIMESTAMP_INICIO.cast(java.time.LocalDate.class).greaterOrEqual(desde));
         }
         if (hasta != null) {
-            builder.add(VISTA_HUECOS.HASTA.cast(java.time.LocalDate.class).lessOrEqual(hasta));
+            builder.add(CITAS.TIMESTAMP_FIN.cast(java.time.LocalDate.class).lessOrEqual(hasta));
         }
         if (clienteId != null) {
             builder.add(CITAS.CLIENTE_ID.eq(clienteId));
@@ -82,6 +85,7 @@ public record CitasFilter(
 
     private Condition getSchedulcondition() {
         Condition schedulcondition = DSL.noCondition();
+        if (rangosHorarios == null || rangosHorarios.isEmpty()){return schedulcondition;}
         for (Map.Entry<Integer, List<TimeInterval>> entry : rangosHorarios.entrySet()) {
             Integer diaSemana = entry.getKey();
             List<TimeInterval> intervals = entry.getValue();
@@ -89,7 +93,7 @@ public record CitasFilter(
             Condition timeCondition = DSL.noCondition();
             for (TimeInterval interval : intervals) {
                 Condition intervalCondition = CITAS.TIMESTAMP_INICIO.cast(LocalTime.class).between(interval.start(), interval.end());
-                timeCondition = timeCondition == DSL.noCondition() ? intervalCondition : timeCondition.or(intervalCondition);
+                timeCondition =  timeCondition.or(intervalCondition);
             }
             schedulcondition = schedulcondition.or(dayCondition.and(timeCondition));
         }

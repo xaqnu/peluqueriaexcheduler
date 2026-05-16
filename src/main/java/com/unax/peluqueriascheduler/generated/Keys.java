@@ -4,6 +4,7 @@
 package com.unax.peluqueriascheduler.generated;
 
 
+import com.unax.peluqueriascheduler.generated.tables.Autenticacion;
 import com.unax.peluqueriascheduler.generated.tables.Citas;
 import com.unax.peluqueriascheduler.generated.tables.FlywaySchemaHistory;
 import com.unax.peluqueriascheduler.generated.tables.HorariosLaborales;
@@ -11,6 +12,7 @@ import com.unax.peluqueriascheduler.generated.tables.PeluqueroConfiguracion;
 import com.unax.peluqueriascheduler.generated.tables.Roles;
 import com.unax.peluqueriascheduler.generated.tables.TiposServicio;
 import com.unax.peluqueriascheduler.generated.tables.Usuarios;
+import com.unax.peluqueriascheduler.generated.tables.records.AutenticacionRecord;
 import com.unax.peluqueriascheduler.generated.tables.records.CitasRecord;
 import com.unax.peluqueriascheduler.generated.tables.records.FlywaySchemaHistoryRecord;
 import com.unax.peluqueriascheduler.generated.tables.records.HorariosLaboralesRecord;
@@ -30,13 +32,14 @@ import org.jooq.impl.Internal;
  * A class modelling foreign key relationships and constraints of tables in
  * public.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({ "all", "unchecked", "rawtypes", "this-escape" })
 public class Keys {
 
     // -------------------------------------------------------------------------
     // UNIQUE and PRIMARY KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final UniqueKey<AutenticacionRecord> AUTENTICACION_PKEY = Internal.createUniqueKey(Autenticacion.AUTENTICACION, DSL.name("autenticacion_pkey"), new TableField[] { Autenticacion.AUTENTICACION.USER_ID }, true);
     public static final UniqueKey<CitasRecord> CITAS_PKEY = Internal.createUniqueKey(Citas.CITAS, DSL.name("citas_pkey"), new TableField[] { Citas.CITAS.ID }, true);
     public static final UniqueKey<FlywaySchemaHistoryRecord> FLYWAY_SCHEMA_HISTORY_PK = Internal.createUniqueKey(FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY, DSL.name("flyway_schema_history_pk"), new TableField[] { FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY.INSTALLED_RANK }, true);
     public static final UniqueKey<HorariosLaboralesRecord> HORARIOS_LABORALES_PKEY = Internal.createUniqueKey(HorariosLaborales.HORARIOS_LABORALES, DSL.name("horarios_laborales_pkey"), new TableField[] { HorariosLaborales.HORARIOS_LABORALES.PELUQUERO_ID, HorariosLaborales.HORARIOS_LABORALES.DIA_SEMANA }, true);
@@ -51,6 +54,7 @@ public class Keys {
     // FOREIGN KEY definitions
     // -------------------------------------------------------------------------
 
+    public static final ForeignKey<AutenticacionRecord, UsuariosRecord> AUTENTICACION__AUTENTICACION_USER_ID_FKEY = Internal.createForeignKey(Autenticacion.AUTENTICACION, DSL.name("autenticacion_user_id_fkey"), new TableField[] { Autenticacion.AUTENTICACION.USER_ID }, Keys.USUARIOS_PKEY, new TableField[] { Usuarios.USUARIOS.ID }, true);
     public static final ForeignKey<CitasRecord, UsuariosRecord> CITAS__CITAS_CLIENTE_ID_FKEY = Internal.createForeignKey(Citas.CITAS, DSL.name("citas_cliente_id_fkey"), new TableField[] { Citas.CITAS.CLIENTE_ID }, Keys.USUARIOS_PKEY, new TableField[] { Usuarios.USUARIOS.ID }, true);
     public static final ForeignKey<CitasRecord, UsuariosRecord> CITAS__CITAS_PELUQUERO_ID_FKEY = Internal.createForeignKey(Citas.CITAS, DSL.name("citas_peluquero_id_fkey"), new TableField[] { Citas.CITAS.PELUQUERO_ID }, Keys.USUARIOS_PKEY, new TableField[] { Usuarios.USUARIOS.ID }, true);
     public static final ForeignKey<CitasRecord, TiposServicioRecord> CITAS__CITAS_TIPO_SERVICIO_ID_FKEY = Internal.createForeignKey(Citas.CITAS, DSL.name("citas_tipo_servicio_id_fkey"), new TableField[] { Citas.CITAS.TIPO_SERVICIO_ID }, Keys.TIPOS_SERVICIO_PKEY, new TableField[] { TiposServicio.TIPOS_SERVICIO.ID }, true);

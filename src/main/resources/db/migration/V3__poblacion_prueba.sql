@@ -2,13 +2,13 @@
 INSERT INTO roles (nombre) VALUES ('cliente'), ('peluquero'), ('admin');
 
 -- usuarios peluqueros
-INSERT INTO usuarios (nombre, email, password_hash, rol_id) VALUES
-('María García', 'maria@test.com', 'hash', 2),
-('Carlos López', 'carlos@test.com', 'hash', 2);
+INSERT INTO usuarios (nombre, email, rol_id) VALUES
+('María García', 'maria@test.com', 2),
+('Carlos López', 'carlos@test.com', 2);
 
 -- usuario cliente
-INSERT INTO usuarios (nombre, email, password_hash, rol_id) VALUES
-('Juan Pérez', 'juan@test.com', 'hash', 1);
+INSERT INTO usuarios (nombre, email, rol_id) VALUES
+('Juan Pérez', 'juan@test.com', 1);
 
 -- config peluqueros
 INSERT INTO peluquero_configuracion (peluquero_id, semanas_agenda_abierta) VALUES 

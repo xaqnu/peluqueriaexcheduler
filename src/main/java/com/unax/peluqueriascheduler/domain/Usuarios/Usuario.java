@@ -23,6 +23,10 @@ public abstract sealed class Usuario permits Cliente, Peluquero, Admin{
     public String toString() {
         return getClass().getSimpleName() + "{id=" + id + ", nombre=" + nombre + ", email=" + email + ", telefono=" + telefono + "}";
     }
+    public Cliente toCliente(){return (Cliente) this;} 
+    public Peluquero toPeluquero(){return (Peluquero) this;}
+    public Admin toAdmin(){return (Admin) this;}
+
 }
     
 

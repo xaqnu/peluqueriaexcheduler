@@ -4,6 +4,7 @@
 package com.unax.peluqueriascheduler.generated;
 
 
+import com.unax.peluqueriascheduler.generated.tables.Autenticacion;
 import com.unax.peluqueriascheduler.generated.tables.Citas;
 import com.unax.peluqueriascheduler.generated.tables.FlywaySchemaHistory;
 import com.unax.peluqueriascheduler.generated.tables.HorariosLaborales;
@@ -17,8 +18,13 @@ import com.unax.peluqueriascheduler.generated.tables.VistaHuecos;
 /**
  * Convenience access to all tables in public.
  */
-@SuppressWarnings({ "all", "unchecked", "rawtypes" })
+@SuppressWarnings({ "all", "unchecked", "rawtypes", "this-escape" })
 public class Tables {
+
+    /**
+     * The table <code>public.autenticacion</code>.
+     */
+    public static final Autenticacion AUTENTICACION = Autenticacion.AUTENTICACION;
 
     /**
      * The table <code>public.citas</code>.
