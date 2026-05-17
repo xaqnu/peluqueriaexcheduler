@@ -30,19 +30,8 @@ public class CitasRepository {
                   .where(CITAS.ID.eq(id))
                   .fetchOneInto(Cita.class);
     }
-    @Transactional(readOnly=true)
-    public List<Cita> getCitasByCliente(Cliente usuario){
-        return dsl.selectFrom(CITAS)
-                  .where(CITAS.CLIENTE_ID.eq(usuario.id()))
-                  .fetchInto(Cita.class);
 
-    }
-    @Transactional(readOnly=true)
-    public List<Cita> getCitasByPeluquero(Peluquero peluquero){
-        return dsl.selectFrom(CITAS)
-                    .where(CITAS.PELUQUERO_ID.eq(peluquero.id()))
-                    .fetchInto(Cita.class);
-    }
+    
     @Transactional(readOnly=true)
     public List<Cita> getCitasByFilter(CitasFilter filter ){
         return dsl.selectFrom(CITAS)

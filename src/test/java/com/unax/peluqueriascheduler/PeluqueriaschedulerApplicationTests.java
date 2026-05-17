@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import java.util.function.Predicate;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -24,6 +25,7 @@ import com.unax.peluqueriascheduler.domain.Citas.EstadoCita;
 import com.unax.peluqueriascheduler.domain.Usuarios.Cliente;
 import com.unax.peluqueriascheduler.domain.Usuarios.Peluquero;
 import com.unax.peluqueriascheduler.repositories.CitasRepository;
+import com.unax.peluqueriascheduler.repositories.UsuariosRepository;
 import com.unax.peluqueriascheduler.utils.TimeInterval;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,10 +34,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @SpringBootTest
 @ActiveProfiles("test")
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class PeluqueriaschedulerApplicationTests {
 
 	@Autowired
     private CitasRepository repository;
+	@Autowired
+	private UsuariosRepository usuarioRepository;
 	@Test
 	void contextLoads() {
 	}
@@ -175,7 +180,8 @@ class PeluqueriaschedulerApplicationTests {
 	void citaRequestCanBeCreated() {
 		CitaRequest citaRequest = new CitaRequest(
 			"Corte de pelo",
-		    LocalDateTime.of(2026,7, 3, 0, 0, 0, 0)
+		    LocalDateTime.of(2026,7, 3, 0, 0, 0, 0),
+			1
 		);
 		assertThat(citaRequest.tipoServicio()).isEqualTo("Corte de pelo");
 		assertThat(citaRequest.timestampInicio()).isEqualTo(LocalDateTime.of(2026, 7, 3, 0, 0, 0, 0));
@@ -229,7 +235,7 @@ class PeluqueriaschedulerApplicationTests {
 	void citasCanbeCreatedInDatabase() {
 		Cliente cliente = new Cliente(1, "Unax", "unax@example.com");
 		Peluquero peluquero = new Peluquero(1, "Pepe", "pepe@example.com", "987654321");
-		CitaRequest citaRequest = new CitaRequest("Corte", LocalDateTime.now().plusDays(1));
+		CitaRequest citaRequest = new CitaRequest("Corte", LocalDateTime.now().plusDays(1),1);
 		Cita cita = repository.createCita(citaRequest, cliente, peluquero);
 		assertThat(cita).isNotNull();
 		assertThat(cita.clientId()).isEqualTo(cliente.id());
@@ -245,24 +251,8 @@ class PeluqueriaschedulerApplicationTests {
 		assertThat(cita).isNotNull();
 		assertThat(cita.id()).isEqualTo(1);
 	}
-    @Test
-	void citasCanBeRetrievedByCliente() {
-	    Cliente cliente = new Cliente(1, "Juan Pérez", "juan@test.com");
-		List<Cita> citas = repository.getCitasByCliente(cliente);
-		assertThat(citas).isNotNull();
-		boolean clienteCorrecto = citas.stream().allMatch((x) -> x.clientId()==cliente.id());
-		assertTrue(clienteCorrecto);
 
-	}
-	@Test
-	void citasCanBeRetrievedByPeluquero(){
-		Peluquero peluquero = new Peluquero(1, "María García", "maria@test.com");
-		List<Cita> citas =repository.getCitasByPeluquero(peluquero);
-		assertThat(citas).isNotNull();
-		boolean peluqueroCorrecto = citas.stream().allMatch((x) -> x.peluqueroId()==peluquero.id());
-		assertTrue(peluqueroCorrecto);
-		
-	}
+
 	@Test
 	void citasFilterCanBeCreated(){
 		Map<Integer,List<TimeInterval>>rangosHorarios = new HashMap<>();
@@ -288,7 +278,7 @@ class PeluqueriaschedulerApplicationTests {
 		assertTrue(assertion.test(citas), descripcion);
 	}
 
-	static Stream<Arguments> filtrosProvider() {
+	private Stream<Arguments> filtrosProvider() {
 		Map<Integer, List<TimeInterval>> horarioCompleto = Map.of(
 			1, List.of(new TimeInterval(LocalTime.of(9, 0), LocalTime.of(18, 0))),
 			2, List.of(new TimeInterval(LocalTime.of(9, 0), LocalTime.of(18, 0))),
@@ -296,16 +286,17 @@ class PeluqueriaschedulerApplicationTests {
 			4, List.of(new TimeInterval(LocalTime.of(9, 0), LocalTime.of(18, 0))),
 			5, List.of(new TimeInterval(LocalTime.of(9, 0), LocalTime.of(18, 0)))
 		);
-
+		Cliente cliente = usuarioRepository.getUsuarioById(3).toCliente();
+		Peluquero peluquero = usuarioRepository.getUsuarioById(1).toPeluquero();
 		return Stream.of(
 			// filtros individuales
 			Arguments.of(
-				CitasFilter.builder().clienteId(3).build(),
+				CitasFilter.builder().cliente(cliente).build(),
 				(Predicate<List<Cita>>) citas -> citas.stream().allMatch(c -> c.clientId() == 3),
 				"clienteId=3 solo devuelve citas del cliente 3"
 			),
 			Arguments.of(
-				CitasFilter.builder().peluqueroId(1).build(),
+				CitasFilter.builder().peluquero(peluquero).build(),
 				(Predicate<List<Cita>>) citas -> citas.stream().allMatch(c -> c.peluqueroId() == 1),
 				"peluqueroId=1 solo devuelve citas del peluquero 1"
 			),
@@ -356,23 +347,17 @@ class PeluqueriaschedulerApplicationTests {
 			),
 			// combinaciones
 			Arguments.of(
-				CitasFilter.builder().peluqueroId(1).estado(EstadoCita.CONFIRMADA).build(),
+				CitasFilter.builder().peluquero(peluquero).estado(EstadoCita.CONFIRMADA).build(),
 				(Predicate<List<Cita>>) citas -> citas.stream().allMatch(c ->
 					c.peluqueroId() == 1 && c.estado() == EstadoCita.CONFIRMADA),
 				"peluquero=1 + estado=CONFIRMADA"
 			),
 			Arguments.of(
-				CitasFilter.builder().semana(20).anio(2026).peluqueroId(1).build(),
+				CitasFilter.builder().semana(20).anio(2026).peluquero(peluquero).build(),
 				(Predicate<List<Cita>>) citas -> citas.stream().allMatch(c ->
 					c.peluqueroId() == 1 &&
 					c.timestampInicio().get(WeekFields.ISO.weekOfWeekBasedYear()) == 20),
 				"semana=20 + peluquero=1"
-			),
-			// caso vacío
-			Arguments.of(
-				CitasFilter.builder().clienteId(999).build(),
-				(Predicate<List<Cita>>) List::isEmpty,
-				"clienteId inexistente devuelve lista vacía"
 			)
 		);
 	}

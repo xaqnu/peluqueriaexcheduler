@@ -11,10 +11,10 @@ import com.unax.peluqueriascheduler.domain.Huecos.Hueco;
 import com.unax.peluqueriascheduler.domain.Usuarios.Peluquero;
 
 @Repository
-public class huecosRepository {
+public class HuecosRepository {
     private final DSLContext dsl;
 
-    public huecosRepository(DSLContext dsl) {
+    public HuecosRepository(DSLContext dsl) {
         this.dsl = dsl;
     }
     // Este repositorio se encargará de gestionar los huecos disponibles de los peluqueros

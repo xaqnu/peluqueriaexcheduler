@@ -16,14 +16,17 @@ import org.jooq.DatePart;
 import org.jooq.impl.DSL;
 
 import com.unax.peluqueriascheduler.domain.Citas.EstadoCita;
+import com.unax.peluqueriascheduler.domain.Usuarios.Cliente;
+import com.unax.peluqueriascheduler.domain.Usuarios.Peluquero;
 import com.unax.peluqueriascheduler.utils.TimeInterval;
 
 import lombok.Builder;
 
 @Builder
 public record CitasFilter( 
-    Integer clienteId,
-    Integer peluqueroId,
+    Integer id,
+    Cliente cliente,
+    Peluquero peluquero,
     Integer tipoServicioId,
     EstadoCita estado,
     EstadoCita noestado,
@@ -39,7 +42,10 @@ public record CitasFilter(
     @Override
     public Condition toCondition(DSLContext dsl) {
         List<Condition> builder = new ArrayList<>();
-        if  (noestado()!=null){
+        if (id != null){
+            builder.add(CITAS.ID.eq(id));
+        }
+        if  (noestado!=null){
             builder.add(CITAS.ESTADO.notEqual(noestado.name()));
         }
         if (desde!= null) {
@@ -48,11 +54,11 @@ public record CitasFilter(
         if (hasta != null) {
             builder.add(CITAS.TIMESTAMP_FIN.lessOrEqual(hasta));
         }
-        if (clienteId != null) {
-            builder.add(CITAS.CLIENTE_ID.eq(clienteId));
+        if (cliente != null) {
+            builder.add(CITAS.CLIENTE_ID.eq(cliente.id()));
         }
-        if (peluqueroId != null) {
-            builder.add(CITAS.PELUQUERO_ID.eq(peluqueroId));
+        if (peluquero!= null) {
+            builder.add(CITAS.PELUQUERO_ID.eq(peluquero.id()));
         }
         if (tipoServicioId != null) {
             builder.add(CITAS.TIPO_SERVICIO_ID.eq(tipoServicioId));

@@ -3,8 +3,8 @@ package com.unax.peluqueriascheduler.dbfilters;
 import static com.unax.peluqueriascheduler.generated.Tables.VISTA_HUECOS;
 import static org.jooq.impl.DSL.extract;
 
-import java.time.LocalDate;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,8 +21,8 @@ import lombok.Builder;
 @Builder
 public record HuecoFilter  (
     Integer peluqueroId,
-    LocalDate desde,
-    LocalDate hasta,
+    LocalDateTime desde,
+    LocalDateTime hasta,
     Integer duracionMinutos,
     Integer dia,
     Integer semana,
@@ -36,10 +36,10 @@ public record HuecoFilter  (
     public Condition toCondition(DSLContext dsl) {
         List<Condition> builder = new ArrayList<>();
         if (desde!= null) {
-            builder.add(VISTA_HUECOS.DESDE.cast(java.time.LocalDate.class).greaterOrEqual(desde));
+            builder.add(VISTA_HUECOS.DESDE.greaterOrEqual(desde));
         }
         if (hasta != null) {
-            builder.add(VISTA_HUECOS.HASTA.cast(java.time.LocalDate.class).lessOrEqual(hasta));
+            builder.add(VISTA_HUECOS.HASTA.lessOrEqual(hasta));
         }
         if (peluqueroId != null) {
             builder.add(VISTA_HUECOS.PELUQUERO_ID.eq(peluqueroId));
@@ -70,6 +70,7 @@ public record HuecoFilter  (
 
     private Condition getSchedulcondition() {
         Condition schedulcondition = DSL.noCondition();
+        if (rangosHorarios == null || rangosHorarios.isEmpty()){return schedulcondition;}
         for (Map.Entry<Integer, List<TimeInterval>> entry : rangosHorarios.entrySet()) {
             Integer diaSemana = entry.getKey();
             List<TimeInterval> intervals = entry.getValue();
